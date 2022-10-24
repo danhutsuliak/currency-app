@@ -1,1 +1,13 @@
-<app-header></app-header>
+<div *ngIf="currencies$ | async as currencies; else loading">
+  <app-header [currencies]="currencies"></app-header>
+
+  <app-convert [currencies]="currencies"></app-convert>
+</div>
+
+<ng-template #loading>
+  <div
+    class="h-screen w-screen flex justify-center items-center text-center text-2xl font-bold"
+  >
+    Loading...
+  </div>
+</ng-template>

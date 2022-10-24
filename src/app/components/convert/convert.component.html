@@ -1,0 +1,63 @@
+<div class="w-screen min-w-max flex flex-col justify-center items-center">
+  <h1 class="text-2xl font-bold py-6">Конвертувати</h1>
+
+  <div class="flex justify-center items-center py-4">
+    <div class="flex gap-2">
+      <select
+        name="base_ccy"
+        [value]="base_ccy_select.value"
+        [formControl]="base_ccy_select"
+        (change)="updateCcyValue()"
+        class="bg-slate-400 text-black p-2"
+      >
+        <option value="UAH">UAH</option>
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+      </select>
+      <input
+        name="base_ccy_value"
+        type="number"
+        [formControl]="base_ccy_input"
+        (change)="updateCcyValue()"
+        class="bg-slate-200 text-black w-32 p-2"
+      />
+    </div>
+
+    <div class="p-4">=</div>
+
+    <div class="flex gap-2">
+      <select
+        name="ccy"
+        [formControl]="ccy_select"
+        (change)="updateBaseCcyValue()"
+        class="bg-slate-400 text-black p-2"
+      >
+        <option class="selection:bg-red-500" value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="UAH">UAH</option>
+      </select>
+      <input
+        name="ccy_value"
+        type="number"
+        [formControl]="ccy_input"
+        (change)="updateBaseCcyValue()"
+        class="bg-slate-200 text-black w-32 p-2"
+      />
+    </div>
+  </div>
+
+  <div class="py-6 flex flex-col gap-4 items-center">
+    <button
+      (click)="swapCurrencies()"
+      class="bg-slate-400 rounded px-4 py-2 text-black hover:bg-slate-500 transition-all"
+    >
+      Поміняти валюти місцями
+    </button>
+    <button
+      (click)="clearInputs()"
+      class="bg-red-600 rounded px-4 py-2 text-black hover:bg-red-700 transition-all"
+    >
+      Очистити
+    </button>
+  </div>
+</div>
