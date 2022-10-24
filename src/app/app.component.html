@@ -2,6 +2,16 @@
   <app-header [currencies]="currencies"></app-header>
 
   <app-convert [currencies]="currencies"></app-convert>
+
+  <div class="text-slate-700 text-xs text-center py-6">
+    Зроблено за допомогою
+    <a
+      href="https://api.privatbank.ua/#p24/exchange"
+      rel="noreferrer"
+      target="_blank"
+      >Приватбанк API</a
+    >
+  </div>
 </div>
 
 <ng-template #loading>
