@@ -7,20 +7,43 @@ import { FormControl } from "@angular/forms";
   templateUrl: "./convert.component.html",
 })
 export class ConvertComponent implements OnInit {
-  base_ccy_select = new FormControl("UAH");
+  base_ccy_select = new FormControl<"UAH" | "EUR" | "USD">("UAH");
   base_ccy_input = new FormControl("");
-  ccy_select = new FormControl("USD");
+  ccy_select = new FormControl<"UAH" | "EUR" | "USD">("USD");
   ccy_input = new FormControl("");
   usdEurRate: number;
   eurUsdRate: number;
 
   @Input() currencies: ICurrencyData[];
+  currencyRates: {
+    UAH_USD: number;
+    UAH_EUR: number;
+    UAH_UAH: number;
+    USD_UAH: number;
+    USD_EUR: number;
+    USD_USD: number;
+    EUR_UAH: number;
+    EUR_USD: number;
+    EUR_EUR: number;
+  };
 
   ngOnInit(): void {
     this.usdEurRate = this.currencies[0].buy / this.currencies[1].buy;
     this.eurUsdRate = this.currencies[1].buy / this.currencies[0].buy;
-    // console.log(this.currencies);
-    // console.log("usd eur", this.usdEurRate, "eur usd", this.eurUsdRate);
+
+    this.currencyRates = {
+      UAH_USD: this.currencies[0].buy,
+      UAH_EUR: this.currencies[1].buy,
+      UAH_UAH: 1,
+
+      USD_UAH: 1 / this.currencies[0].sale,
+      USD_EUR: this.usdEurRate,
+      USD_USD: 1,
+
+      EUR_UAH: 1 / this.currencies[1].sale,
+      EUR_USD: this.eurUsdRate,
+      EUR_EUR: 1,
+    };
   }
 
   // fires when first input is changed
@@ -34,37 +57,21 @@ export class ConvertComponent implements OnInit {
 
     if (this.base_ccy_select.value === this.ccy_select.value) {
       this.ccy_input.setValue(this.base_ccy_input.value);
+      return;
     }
 
-    if (this.base_ccy_select.value === "UAH" && this.ccy_select.value === "USD")
-      this.ccy_input.setValue(
-        (+this.base_ccy_input.value / this.currencies[0].buy).toFixed(3)
-      );
+    if (this.base_ccy_select.value === null || this.ccy_select.value === null) {
+      return;
+    }
 
-    if (this.base_ccy_select.value === "USD" && this.ccy_select.value === "UAH")
-      this.ccy_input.setValue(
-        (+this.base_ccy_input.value * this.currencies[0].sale).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "UAH" && this.ccy_select.value === "EUR")
-      this.ccy_input.setValue(
-        (+this.base_ccy_input.value / this.currencies[1].buy).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "EUR" && this.ccy_select.value === "UAH")
-      this.ccy_input.setValue(
-        (+this.base_ccy_input.value * this.currencies[1].sale).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "USD" && this.ccy_select.value === "EUR")
-      this.ccy_input.setValue(
-        (+this.base_ccy_input.value * this.usdEurRate).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "EUR" && this.ccy_select.value === "USD")
-      this.ccy_input.setValue(
-        (+this.base_ccy_input.value * this.eurUsdRate).toFixed(3)
-      );
+    this.ccy_input.setValue(
+      (
+        +this.base_ccy_input.value *
+        this.currencyRates[
+          `${this.ccy_select.value}_${this.base_ccy_select.value}`
+        ]
+      ).toFixed(3)
+    );
   }
 
   // fires when second input is changed
@@ -77,45 +84,28 @@ export class ConvertComponent implements OnInit {
       this.base_ccy_input.setValue(this.ccy_input.value);
     }
 
-    if (this.base_ccy_select.value === "UAH" && this.ccy_select.value === "USD")
-      this.base_ccy_input.setValue(
-        (+this.ccy_input.value * this.currencies[0].buy).toFixed(3)
-      );
+    if (this.base_ccy_select.value === null || this.ccy_select.value === null) {
+      return;
+    }
 
-    if (this.base_ccy_select.value === "USD" && this.ccy_select.value === "UAH")
-      this.base_ccy_input.setValue(
-        (+this.ccy_input.value / this.currencies[0].sale).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "UAH" && this.ccy_select.value === "EUR")
-      this.base_ccy_input.setValue(
-        (+this.ccy_input.value * this.currencies[1].buy).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "EUR" && this.ccy_select.value === "UAH")
-      this.base_ccy_input.setValue(
-        (+this.ccy_input.value / this.currencies[1].sale).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "USD" && this.ccy_select.value === "EUR")
-      this.base_ccy_input.setValue(
-        (+this.ccy_input.value * this.eurUsdRate).toFixed(3)
-      );
-
-    if (this.base_ccy_select.value === "EUR" && this.ccy_select.value === "USD")
-      this.base_ccy_input.setValue(
-        (+this.ccy_input.value * this.usdEurRate).toFixed(3)
-      );
+    this.base_ccy_input.setValue(
+      (
+        +this.ccy_input.value *
+        this.currencyRates[
+          `${this.base_ccy_select.value}_${this.ccy_select.value}`
+        ]
+      ).toFixed(3)
+    );
   }
 
   swapCurrencies() {
-    let buf = this.base_ccy_select.value;
+    const buf = this.base_ccy_select.value!;
     this.base_ccy_select.setValue(this.ccy_select.value);
     this.ccy_select.setValue(buf);
 
-    buf = this.base_ccy_input.value;
+    const buf2 = this.base_ccy_input.value;
     this.base_ccy_input.setValue(this.ccy_input.value);
-    this.ccy_input.setValue(buf);
+    this.ccy_input.setValue(buf2);
 
     this.updateBaseCcyValue();
   }
